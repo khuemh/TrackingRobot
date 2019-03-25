@@ -25,7 +25,7 @@ using namespace std;
 /*
  * Definition
  */
-#define RASPI
+//#define RASPI
 #define CAM_INDEX					0
 #define data_LEN					4
 
@@ -64,9 +64,11 @@ bool flag = true;
 int dWidth;
 int dHeight;
 
+int object_area;
+
 Point object;
 
-uint16_t buffer_data[data_LEN];
+uint8_t buffer_data[data_LEN];
 
 
 /*
@@ -77,6 +79,7 @@ Mat pre_Process(Mat frameORG);
 Point calc_coor(Point pnt_in);
 string coor_to_str(Point object);
 void draw_grid(Mat frameORG);
+int i_map(int in, float max1, float max2);
 void end_prog();
 
 /*
@@ -179,7 +182,7 @@ int main()
 		Point maxPos;
 		minMaxLoc(Mat(areas), 0, &max, 0, &maxPos);
 		//drawContours(frameThresh, contours, maxPos.y, Scalar(255), CV_FILLED);
-
+		
 		
 		string obj_Data;
 		Point tmp_object;
@@ -192,6 +195,7 @@ int main()
 
 			object.x = box.x + box.width / 2;
 			object.y = box.y + box.height / 2;
+			object_area = box.width * box.height;
 
 			//tmp_object = calc_coor(object);
 			// Center Data calibration
@@ -199,29 +203,35 @@ int main()
 			//cout << "Pos: " << obj_Data << "\n";
 			//cout << tmp_object.x << " , " << tmp_object.y << "\n";
 
+			buffer_data[1] = i_map(object.x, dWidth, 255);
+			buffer_data[2] = i_map(object.y, dHeight, 255);
+			buffer_data[3] = i_map(object_area, dWidth * dHeight, 255);
+
+
+			//cout << "8bit X: " << int(buffer_data[1]) <<  "8bit Y: " << int(buffer_data[2]) << "8bit Area: " << int(buffer_data[3]) << "\n";
+
+			/*
 			buffer_data[1] = object.x;
 			buffer_data[2] = object.y;
 			buffer_data[3] = object.x * object.y;
-
+			*/
 #ifdef RASPI
 			send(buffer_data);
-			serialClose(fd);
 #else
-			cout << buffer_data[1] << " , " << buffer_data[2] << " , " << buffer_data[3] << "\n";
+			cout << "8bit X: " << int(buffer_data[1]) << "  8bit Y: " << int(buffer_data[2]) << "  8bit Area: " << int(buffer_data[3]) << "\n";
 #endif // RASPI
 
-			
 		}
 		else
 		{
-			buffer_data[1] = object.x;
-			buffer_data[2] = object.y;
-			buffer_data[3] = object.x * object.y;
+			buffer_data[1] = i_map(object.x, dWidth, 255);
+			buffer_data[2] = i_map(object.y, dHeight, 255);
+			buffer_data[3] = i_map(object_area, dWidth * dHeight, 255);
+
 #ifdef RASPI
 			send(buffer_data);
-			serialClose(fd);
 #else
-			cout << buffer_data[1] << " , " << buffer_data[2] << " , " << buffer_data[3] << "\n";
+			cout << "8bit X: " << int(buffer_data[1]) << "  8bit Y: " << int(buffer_data[2]) << "  8bit Area: " << int(buffer_data[3]) << "\n";
 #endif // RASPI
 		}
 		
@@ -334,6 +344,14 @@ void draw_grid(Mat frameORG)
 {
 	line(frameORG, Point(dWidth / 2, 0), Point(dWidth / 2, dHeight), Scalar(255, 100, 0), 1, 8);
 	line(frameORG, Point(0, dHeight / 2), Point(dWidth, dHeight / 2), Scalar(255, 100, 0), 1, 8);
+}
+
+int i_map(int in, float max1, float max2)
+{
+	int out;
+	float tmp = max1 / max2;
+	out = in / tmp;
+	return out;
 }
 
 #ifdef RASPI

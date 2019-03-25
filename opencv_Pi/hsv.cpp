@@ -13,22 +13,39 @@ ID:                 $Id:  $
 **********************************************************************/
 
 /*
-* Include Header File
-*/
+ * Include Header File
+ */
 #include <iostream>
+#include <string>
 #include <opencv2/opencv.hpp>
 
 using namespace cv;
 using namespace std;
 
 /*
-* Definition
-*/
-#define CAM_INDEX			0
+ * Definition
+ */
+#define RASPI
+#define CAM_INDEX					0
+#define data_LEN					4
+
+#ifdef RASPI
+	#include <stdio.h>
+	#include <string.h>
+	#include <stdlib.h>
+	#include <errno.h>
+	#include <wiringPi.h>
+	#include <wiringSerial.h>
+
+	int fd;
+	void send(const char *data);
+	void serialCheck();
+#endif // RASPI
+
 
 /*
-* Global variables and constants Declaration
-*/
+ * Global variables and constants Declaration
+ */
 /* Create HSV value */
 struct HSV_Val
 {
@@ -39,45 +56,49 @@ struct HSV_Val
 	int V_max;
 	int V_min;
 };
-
 struct HSV_Val hsv;
 
-/* Create HSV Trackbar function */
-void Create_HSV_Trackbar()
-{
-	/* Create control WINDOW */
-	const char* ctrl_window = "HSV CONTROL";
-	namedWindow(ctrl_window, CV_WINDOW_AUTOSIZE);
 
-	cvCreateTrackbar("Low H", ctrl_window, &hsv.H_min, 179);
-	cvCreateTrackbar("High H", ctrl_window, &hsv.H_max, 179);
-	cvCreateTrackbar("Low S", ctrl_window, &hsv.S_min, 255);
-	cvCreateTrackbar("High S", ctrl_window, &hsv.S_max, 255);
-	cvCreateTrackbar("Low V", ctrl_window, &hsv.V_min, 255);
-	cvCreateTrackbar("High V", ctrl_window, &hsv.V_max, 255);
-}
+bool flag = true;
+
+int dWidth;
+int dHeight;
+
+Point object;
+
+uint16_t buffer_data[data_LEN];
+
 
 /*
-* Functions Declaration
-*/
+ * Functions Declaration
+ */
+void Create_HSV_Trackbar();
+Mat pre_Process(Mat frameORG);
+Point calc_coor(Point pnt_in);
+string coor_to_str(Point object);
+void draw_grid(Mat frameORG);
 void end_prog();
 
 /*
-MAIN FUNCTION
-*/
+ * MAIN FUNCTION
+ */
 int main()
 {
 	/* MAIN SETUP */
+#ifdef RASPI
+	serialCheck();
+#endif // RASPI
+
 	// Get video from CAM
 	VideoCapture cap(CAM_INDEX);
 	if (cap.isOpened() == false)
 	{
-		cout << "ERROR" << endl;
+		cout << "PLEASE CHECK THE CAMERA INDEX" << endl;
 		cin.get();
 		return -1;
 	}
-	double dWidth = cap.get(CAP_PROP_FRAME_WIDTH);
-	double dHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
+	dWidth = int(cap.get(CAP_PROP_FRAME_WIDTH));
+	dHeight = int(cap.get(CAP_PROP_FRAME_HEIGHT));
 
 	//cout << "Resolution of the video: " << dWidth << " x " << dHeight << endl;
 
@@ -86,12 +107,13 @@ int main()
 	namedWindow(main_window);
 	String thresh_window = "Thesh Image";
 	namedWindow(thresh_window);
+
 	// Create HSV trackbar
 	Create_HSV_Trackbar();
-
+	Mat frameORG;
+	Mat frameThresh;
 	while (cap.isOpened())
 	{
-		Mat frameORG;
 		bool isSuccess = cap.read(frameORG);
 		if (isSuccess == false)
 		{
@@ -102,22 +124,7 @@ int main()
 
 		// Flip the frame
 		flip(frameORG, frameORG, 1);
-
-		// Convert BGR to HSV
-		Mat frameHSV;
-		cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
-
-		// Theshold the frame
-		Mat frameThresh;
-		inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
-
-		// Morphological Opening
-		erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		dilate(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-		// Morphological Closing
-		dilate(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		frameThresh = pre_Process(frameORG);
 
 		/****************** MOMENTS *****************************
 		Mat imgCircles = Mat::zeros(frameORG.size(), CV_8UC3);
@@ -171,20 +178,55 @@ int main()
 		double max;
 		Point maxPos;
 		minMaxLoc(Mat(areas), 0, &max, 0, &maxPos);
-		drawContours(frameThresh, contours, maxPos.y, Scalar(255), CV_FILLED);
+		//drawContours(frameThresh, contours, maxPos.y, Scalar(255), CV_FILLED);
 
-		Point center;
+		
+		string obj_Data;
+		Point tmp_object;
 		Rect box;
 
 		if (contours.size() >= 1)
 		{
 			box = boundingRect(contours[maxPos.y]);
-			rectangle(frameORG, box.tl(), box.br(), Scalar(255, 0, 0), 3, 8, 0);
-		}
-		center.x = box.x + box.width / 2;
-		center.y = box.y + box.height / 2;
+			rectangle(frameORG, box.tl(), box.br(), Scalar(255, 0, 0), 2, 8, 0);
 
-		cout << "Pos: " << center.x << " , " << center.y << "\n";
+			object.x = box.x + box.width / 2;
+			object.y = box.y + box.height / 2;
+
+			//tmp_object = calc_coor(object);
+			// Center Data calibration
+			//obj_Data = coor_to_str(object);
+			//cout << "Pos: " << obj_Data << "\n";
+			//cout << tmp_object.x << " , " << tmp_object.y << "\n";
+
+			buffer_data[1] = object.x;
+			buffer_data[2] = object.y;
+			buffer_data[3] = object.x * object.y;
+
+#ifdef RASPI
+			send(buffer_data);
+			serialClose(fd);
+#else
+			cout << buffer_data[1] << " , " << buffer_data[2] << " , " << buffer_data[3] << "\n";
+#endif // RASPI
+
+			
+		}
+		else
+		{
+			buffer_data[1] = object.x;
+			buffer_data[2] = object.y;
+			buffer_data[3] = object.x * object.y;
+#ifdef RASPI
+			send(buffer_data);
+			serialClose(fd);
+#else
+			cout << buffer_data[1] << " , " << buffer_data[2] << " , " << buffer_data[3] << "\n";
+#endif // RASPI
+		}
+		
+		// Draw center grid
+		draw_grid(frameORG);
 		// Show result frame
 		imshow(main_window, frameORG);
 		imshow(thresh_window, frameThresh);
@@ -196,9 +238,89 @@ int main()
 }
 
 /*
-* FUNCTIONS
-*/
+ * FUNCTIONS
+ */
 /* END function */
+void Create_HSV_Trackbar()
+{
+	/* Create control WINDOW */
+	const char* ctrl_window = "HSV CONTROL";
+	namedWindow(ctrl_window, CV_WINDOW_AUTOSIZE);
+
+	cvCreateTrackbar("Low H", ctrl_window, &hsv.H_min, 179);
+	cvCreateTrackbar("High H", ctrl_window, &hsv.H_max, 179);
+	cvCreateTrackbar("Low S", ctrl_window, &hsv.S_min, 255);
+	cvCreateTrackbar("High S", ctrl_window, &hsv.S_max, 255);
+	cvCreateTrackbar("Low V", ctrl_window, &hsv.V_min, 255);
+	cvCreateTrackbar("High V", ctrl_window, &hsv.V_max, 255);
+}
+
+Mat pre_Process(Mat frameORG)
+{
+	Mat frame_out;
+	Mat frameHSV;
+	Mat frameThresh;
+	// Convert BGR to HSV
+	cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
+	// Theshold the frame
+	//inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
+	inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
+
+	// Morphological Opening
+	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	// Morphological Closing
+	dilate(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	return frameThresh;
+}
+
+Point calc_coor(Point pnt_in)
+{
+	Point pnt_out;
+
+	pnt_out.x = pnt_in.x - dWidth / 2;
+	pnt_out.y = -(pnt_in.y - dHeight / 2);
+
+	return pnt_out;
+}
+
+string coor_to_str(Point object)
+{
+	string center_Data;
+	string tmpX;
+	string tmpY;
+	if ((object.x / 10) == 0)
+	{
+		tmpX = "00" + to_string(object.x);
+	}
+	else if ((object.x / 100) == 0)
+	{
+		tmpX = "0" + to_string(object.x);
+	}
+	else
+	{
+		tmpX = to_string(object.x);
+	}
+
+	if ((object.y / 10) == 0)
+	{
+		tmpY = "00" + to_string(object.y);
+	}
+	else if ((object.x / 100) == 0)
+	{
+		tmpY = "0" + to_string(object.y);
+	}
+	else
+	{
+		tmpY = to_string(object.y);
+	}
+	return center_Data = to_string(flag) + tmpX + tmpY;
+}
+
+
 void end_prog()
 {
 	if (waitKey(10) == 27)
@@ -207,3 +329,25 @@ void end_prog()
 		exit(EXIT_SUCCESS);
 	}
 }
+
+void draw_grid(Mat frameORG)
+{
+	line(frameORG, Point(dWidth / 2, 0), Point(dWidth / 2, dHeight), Scalar(255, 100, 0), 1, 8);
+	line(frameORG, Point(0, dHeight / 2), Point(dWidth, dHeight / 2), Scalar(255, 100, 0), 1, 8);
+}
+
+#ifdef RASPI
+	void send(const char *data)
+	{
+		serialPuts(fd, data);
+		serialFlush(fd);
+	}
+
+	void serialCheck()
+	{
+		if ((fd = serialOpen("/dev/ttyAMA0", 115200)) < 0)
+		{
+			fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
+		}
+	}
+#endif // RASPI

@@ -2,6 +2,7 @@ README
 
 ** NOTE:
 - On PC/Laptop and Raspi:   . Linux environment
+                            . Python3 installed
                             . OpenCV 3.4 installed
                             . sudo modprobe bcm2835-v4l2 (enable Camera)
 

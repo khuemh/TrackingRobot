@@ -2,6 +2,7 @@ README
 
 ** NOTE:
 - On PC/Laptop and Raspi:   . Linux environment
+                            . python3 installed
                             . OpenCV 3.4 installed
                             . netcat packed installed
                             . ffmpeg packed installed

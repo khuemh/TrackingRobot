@@ -70,6 +70,9 @@ Point object;
 
 uint8_t buffer_data[data_LEN];
 
+uint8_t *spi_buffer;
+
+uint16_t trash_X;
 
 /*
  * Functions Declaration
@@ -80,6 +83,8 @@ Point calc_coor(Point pnt_in);
 string coor_to_str(Point object);
 void draw_grid(Mat frameORG);
 int i_map(int in, float max1, float max2);
+uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A);
+uint16_t byte8_to_byte16(uint8_t * byte8);
 void end_prog();
 
 /*
@@ -197,6 +202,11 @@ int main()
 			object.y = box.y + box.height / 2;
 			object_area = box.width * box.height;
 
+			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
+			trash_X = byte8_to_byte16(spi_buffer);
+
+			cout << "Pos: " << trash_X << "\n";
+
 			//tmp_object = calc_coor(object);
 			// Center Data calibration
 			//obj_Data = coor_to_str(object);
@@ -218,7 +228,7 @@ int main()
 #ifdef RASPI
 			send(buffer_data);
 #else
-			cout << "8bit X: " << int(buffer_data[1]) << "  8bit Y: " << int(buffer_data[2]) << "  8bit Area: " << int(buffer_data[3]) << "\n";
+			//cout << "8bit X: " << int(buffer_data[1]) << "  8bit Y: " << int(buffer_data[2]) << "  8bit Area: " << int(buffer_data[3]) << "\n";
 #endif // RASPI
 
 		}
@@ -231,7 +241,7 @@ int main()
 #ifdef RASPI
 			send(buffer_data);
 #else
-			cout << "8bit X: " << int(buffer_data[1]) << "  8bit Y: " << int(buffer_data[2]) << "  8bit Area: " << int(buffer_data[3]) << "\n";
+			//cout << "8bit X: " << int(buffer_data[1]) << "  8bit Y: " << int(buffer_data[2]) << "  8bit Area: " << int(buffer_data[3]) << "\n";
 #endif // RASPI
 		}
 		
@@ -352,6 +362,25 @@ int i_map(int in, float max1, float max2)
 	float tmp = max1 / max2;
 	out = in / tmp;
 	return out;
+}
+
+uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A)
+{
+	uint8_t out_byte8[6];
+	out_byte8[0] = (uint8_t)((byte16_X >> 8) & 0xFF); // BYTE HIGH
+	out_byte8[1] = (uint8_t)(byte16_X & 0xFF);		  // BYTE LOW
+	out_byte8[2] = (uint8_t)((byte16_Y >> 8) & 0xFF); // BYTE HIGH
+	out_byte8[3] = (uint8_t)(byte16_Y & 0xFF);		  // BYTE LOW
+	out_byte8[4] = (uint8_t)((byte16_A >> 8) & 0xFF); // BYTE HIGH
+	out_byte8[5] = (uint8_t)(byte16_A & 0xFF);		  // BYTE LOW
+	return out_byte8;
+}
+
+uint16_t byte8_to_byte16(uint8_t * byte8)
+{
+	uint16_t out_byte16;
+	out_byte16 = byte8[4] << 8 | byte8[5];
+	return out_byte16;
 }
 
 #ifdef RASPI

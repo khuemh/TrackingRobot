@@ -273,8 +273,8 @@ Mat pre_Process(Mat frameORG)
 	// Convert BGR to HSV
 	cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
 	// Theshold the frame
-	//inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
-	inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
+	inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
+	//inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
 
 	// Morphological Opening
 	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));

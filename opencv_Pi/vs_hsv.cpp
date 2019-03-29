@@ -188,7 +188,7 @@ int main()
 		findContours(frameThresh, contours, RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
 		vector<double> areas(contours.size());
-		for (int i = 0; i < (int)contours.size(); i++)
+		for (int i = 0; i < contours.size(); i++)
 		{
 			areas[i] = contourArea(Mat(contours[i]));
 		}

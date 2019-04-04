@@ -25,7 +25,11 @@ using namespace std;
 /*
 * Definition
 */
+<<<<<<< HEAD
+#define RASPI
+=======
 //#define RASPI
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 #define CAM_INDEX					0
 
 
@@ -75,7 +79,7 @@ bool flag = true;
 
 int dWidth;
 int dHeight;
-
+const uint8_t center_W = 50;
 int object_area;
 
 Point object;
@@ -204,9 +208,11 @@ int main()
 		{
 			box = boundingRect(contours[maxPos.y]);
 			rectangle(frameORG, box.tl(), box.br(), Scalar(255, 0, 0), 2, 8, 0);
+			
 
 			object.x = box.x + box.width / 2;
 			object.y = box.y + box.height / 2;
+			circle(frameORG, object, 2, Scalar(255, 100, 0), 3);
 			object_area = box.width * box.height;
 
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
@@ -215,23 +221,41 @@ int main()
 #ifdef RASPI
 			spi_send(spi_buffer);
 #else
+<<<<<<< HEAD
+			//trash_X = byte8_to_byte16(spi_buffer);
+			//cout << "Pos: " << trash_X << "\n";
+=======
 			trash_X = byte8_to_byte16(spi_buffer);
 			cout << "Pos: " << trash_X << "\n";
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 #endif // RASPI
 
 		}
+		/*
 		else
 		{
+<<<<<<< HEAD
+			//spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
+=======
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 
 #ifdef RASPI
 			spi_send(spi_buffer);
 #else
+<<<<<<< HEAD
+			//trash_X = byte8_to_byte16(spi_buffer);
+			cout << "Pos: " << trash_X << "\n";
+#endif // RASPI
+		}
+		*/
+=======
 			trash_X = byte8_to_byte16(spi_buffer);
 			cout << "Pos: " << trash_X << "\n";
 #endif // RASPI
 		}
 
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 		// Draw center grid
 		draw_grid(frameORG);
 		// Show result frame
@@ -271,7 +295,12 @@ Mat pre_Process(Mat frameORG)
 	cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
 	// Theshold the frame
 	//inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
+<<<<<<< HEAD
+	//inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
+	inRange(frameHSV, Scalar(0, 173, 99), Scalar(179, 255, 255), frameThresh);
+=======
 	inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 
 	// Morphological Opening
 	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -341,6 +370,9 @@ void draw_grid(Mat frameORG)
 {
 	line(frameORG, Point(dWidth / 2, 0), Point(dWidth / 2, dHeight), Scalar(255, 100, 0), 1, 8);
 	line(frameORG, Point(0, dHeight / 2), Point(dWidth, dHeight / 2), Scalar(255, 100, 0), 1, 8);
+	line(frameORG, Point(dWidth / 2 - center_W, 0), Point(dWidth / 2 - center_W, dHeight), Scalar(0, 100, 0), 1, 8);
+	line(frameORG, Point(dWidth / 2 + center_W, 0), Point(dWidth / 2 + center_W, dHeight), Scalar(0, 100, 0), 1, 8);
+	
 }
 
 int i_map(int in, float max1, float max2)
@@ -353,7 +385,7 @@ int i_map(int in, float max1, float max2)
 
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A)
 {
-	uint8_t out_byte8[6];
+	uint8_t * out_byte8;
 	out_byte8[0] = (uint8_t)((byte16_X >> 8) & 0xFF); // BYTE HIGH
 	out_byte8[1] = (uint8_t)(byte16_X & 0xFF);		  // BYTE LOW
 	out_byte8[2] = (uint8_t)((byte16_Y >> 8) & 0xFF); // BYTE HIGH
@@ -384,6 +416,10 @@ int spi_init()
 	}
 
 	spi_fd = wiringPiSPIGetFd(0);
+<<<<<<< HEAD
+	return 1;
+=======
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 }
 
 void spi_send(uint8_t *data)
@@ -392,4 +428,8 @@ void spi_send(uint8_t *data)
 	write(spi_fd, data, tx_Size);
 	spi_disable;
 }
+<<<<<<< HEAD
 #endif // RASPI
+=======
+#endif // RASPI
+>>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0

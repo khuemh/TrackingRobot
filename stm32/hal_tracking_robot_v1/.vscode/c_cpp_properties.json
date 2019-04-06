@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Inc",
+                "${workspaceFolder}/Src",
+                "C:/Users/PC/STM32Cube/Repository/STM32Cube_FW_F4_V1.18.0/Drivers/STM32F4xx_HAL_Driver/Inc/",
+                "C:/Users/PC/STM32Cube/Repository/STM32Cube_FW_F4_V1.18.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include/",
+                "C:/Users/PC/STM32Cube/Repository/STM32Cube_FW_F4_V1.18.0/Drivers/CMSIS/Include/"   
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "8.1",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/cl.exe",
+            "cStandard": "c11",
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}

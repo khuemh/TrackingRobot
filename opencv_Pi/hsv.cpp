@@ -25,11 +25,7 @@ using namespace std;
 /*
 * Definition
 */
-<<<<<<< HEAD
 #define RASPI
-=======
-//#define RASPI
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 #define CAM_INDEX					0
 
 
@@ -221,41 +217,24 @@ int main()
 #ifdef RASPI
 			spi_send(spi_buffer);
 #else
-<<<<<<< HEAD
-			//trash_X = byte8_to_byte16(spi_buffer);
-			//cout << "Pos: " << trash_X << "\n";
-=======
 			trash_X = byte8_to_byte16(spi_buffer);
 			cout << "Pos: " << trash_X << "\n";
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 #endif // RASPI
 
 		}
 		/*
 		else
 		{
-<<<<<<< HEAD
-			//spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
-=======
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 
 #ifdef RASPI
 			spi_send(spi_buffer);
 #else
-<<<<<<< HEAD
-			//trash_X = byte8_to_byte16(spi_buffer);
-			cout << "Pos: " << trash_X << "\n";
-#endif // RASPI
-		}
-		*/
-=======
 			trash_X = byte8_to_byte16(spi_buffer);
 			cout << "Pos: " << trash_X << "\n";
 #endif // RASPI
 		}
-
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
+		*/
 		// Draw center grid
 		draw_grid(frameORG);
 		// Show result frame
@@ -295,12 +274,7 @@ Mat pre_Process(Mat frameORG)
 	cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
 	// Theshold the frame
 	//inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
-<<<<<<< HEAD
-	//inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
-	inRange(frameHSV, Scalar(0, 173, 99), Scalar(179, 255, 255), frameThresh);
-=======
-	inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
+	inRange(frameHSV, Scalar(0, 189, 114), Scalar(179, 255, 255), frameThresh);
 
 	// Morphological Opening
 	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -416,10 +390,6 @@ int spi_init()
 	}
 
 	spi_fd = wiringPiSPIGetFd(0);
-<<<<<<< HEAD
-	return 1;
-=======
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0
 }
 
 void spi_send(uint8_t *data)
@@ -428,8 +398,4 @@ void spi_send(uint8_t *data)
 	write(spi_fd, data, tx_Size);
 	spi_disable;
 }
-<<<<<<< HEAD
 #endif // RASPI
-=======
-#endif // RASPI
->>>>>>> f9f5531e6e01163b0d9c321594d55aa4f3b1d1d0

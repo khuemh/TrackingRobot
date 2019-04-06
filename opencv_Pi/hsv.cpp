@@ -25,7 +25,7 @@ using namespace std;
 /*
 * Definition
 */
-//#define RASPI
+#define RASPI
 #define CAM_INDEX					0
 
 
@@ -75,7 +75,7 @@ bool flag = true;
 
 int dWidth;
 int dHeight;
-
+const uint8_t center_W = 50;
 int object_area;
 
 Point object;
@@ -204,9 +204,11 @@ int main()
 		{
 			box = boundingRect(contours[maxPos.y]);
 			rectangle(frameORG, box.tl(), box.br(), Scalar(255, 0, 0), 2, 8, 0);
+			
 
 			object.x = box.x + box.width / 2;
 			object.y = box.y + box.height / 2;
+			circle(frameORG, object, 2, Scalar(255, 100, 0), 3);
 			object_area = box.width * box.height;
 
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
@@ -220,6 +222,7 @@ int main()
 #endif // RASPI
 
 		}
+		/*
 		else
 		{
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
@@ -231,7 +234,7 @@ int main()
 			cout << "Pos: " << trash_X << "\n";
 #endif // RASPI
 		}
-
+		*/
 		// Draw center grid
 		draw_grid(frameORG);
 		// Show result frame
@@ -271,7 +274,7 @@ Mat pre_Process(Mat frameORG)
 	cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
 	// Theshold the frame
 	//inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
-	inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
+	inRange(frameHSV, Scalar(0, 189, 114), Scalar(179, 255, 255), frameThresh);
 
 	// Morphological Opening
 	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -341,6 +344,9 @@ void draw_grid(Mat frameORG)
 {
 	line(frameORG, Point(dWidth / 2, 0), Point(dWidth / 2, dHeight), Scalar(255, 100, 0), 1, 8);
 	line(frameORG, Point(0, dHeight / 2), Point(dWidth, dHeight / 2), Scalar(255, 100, 0), 1, 8);
+	line(frameORG, Point(dWidth / 2 - center_W, 0), Point(dWidth / 2 - center_W, dHeight), Scalar(0, 100, 0), 1, 8);
+	line(frameORG, Point(dWidth / 2 + center_W, 0), Point(dWidth / 2 + center_W, dHeight), Scalar(0, 100, 0), 1, 8);
+	
 }
 
 int i_map(int in, float max1, float max2)
@@ -353,7 +359,7 @@ int i_map(int in, float max1, float max2)
 
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A)
 {
-	uint8_t out_byte8[6];
+	uint8_t * out_byte8;
 	out_byte8[0] = (uint8_t)((byte16_X >> 8) & 0xFF); // BYTE HIGH
 	out_byte8[1] = (uint8_t)(byte16_X & 0xFF);		  // BYTE LOW
 	out_byte8[2] = (uint8_t)((byte16_Y >> 8) & 0xFF); // BYTE HIGH

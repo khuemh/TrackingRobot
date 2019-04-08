@@ -1,4 +1,4 @@
-# Install script for directory: /home/khuehm/Downloads/udp-image-streaming
+# Install script for directory: /home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/khuehm/Downloads/udp-image-streaming/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

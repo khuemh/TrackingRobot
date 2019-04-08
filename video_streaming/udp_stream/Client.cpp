@@ -38,6 +38,7 @@ int main(int argc, char * argv[])
         while (1) 
         {
             cap >> frame;
+            flip(frame, frame, 1);
             if(frame.size().width==0)continue;//simple integrity check; skip erroneous data...
             resize(frame, send, Size(FRAME_WIDTH, FRAME_HEIGHT), 0, 0, INTER_LINEAR);
             vector < int > compression_params;

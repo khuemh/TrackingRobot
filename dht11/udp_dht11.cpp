@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <iostream>
+#include "Socket.h"
+
+using namespace std;
+
+
 #define MAXTIMINGS 85
 #define DHTPIN 7
 
@@ -9,14 +15,26 @@ void read_dht11_dat();
 
 int dht11_dat[5] = {0, 0, 0, 0, 0};
 
-int main(void)
+int main(int argc, char const *argv[])
 {
+    if ((argc < 3) || (argc > 3))
+    {
+            cerr << "Usage: " << argv[0] << " <Server> <Server Port>\n";
+            exit(1);
+    }
+
+    string servAddress = argv[1]; // First arg: server address
+    unsigned short servPort = Socket::resolveService(argv[2], "udp");
+
+    UDPSocket sock;
+
 	if (wiringPiSetup() == -1)
 		exit(1);
 
 	while (1)
 	{
 		read_dht11_dat();
+        sock.sendTo(dht11_dat, sizeof(dht11_dat), servAddress, servPort);
 		delay(1000);
 	}
 

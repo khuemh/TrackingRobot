@@ -16,8 +16,13 @@ ID:                 $Id:  $
 * Include Header File
 */
 #include <iostream>
+#include <ctime>
 #include <string>
-#include <opencv2/opencv.hpp>
+
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+
 
 using namespace cv;
 using namespace std;
@@ -73,9 +78,10 @@ struct HSV_Val hsv;
 
 bool flag = true;
 
+int fps;
 int dWidth;
 int dHeight;
-
+const uint8_t center_W = 50;
 int object_area;
 
 Point object;
@@ -89,10 +95,7 @@ uint16_t trash_X;
 */
 void Create_HSV_Trackbar();
 Mat pre_Process(Mat frameORG);
-Point calc_coor(Point pnt_in);
-string coor_to_str(Point object);
 void draw_grid(Mat frameORG);
-int i_map(int in, float max1, float max2);
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A);
 uint16_t byte8_to_byte16(uint8_t * byte8);
 void end_prog();
@@ -100,7 +103,7 @@ void end_prog();
 /*
 * MAIN FUNCTION
 */
-int main()
+int main(void)
 {
 	/* MAIN SETUP */
 #ifdef RASPI
@@ -115,10 +118,18 @@ int main()
 		cin.get();
 		return -1;
 	}
+
+	fps = int(cap.get(CAP_PROP_FPS));
 	dWidth = int(cap.get(CAP_PROP_FRAME_WIDTH));
 	dHeight = int(cap.get(CAP_PROP_FRAME_HEIGHT));
 
+	/* Frame counter */
+	long frameCounter = 0;
+	time_t timeBegin = time(0);
+	int tick = 0;
+
 	//cout << "Resolution of the video: " << dWidth << " x " << dHeight << endl;
+
 
 	// Create main WINDOW
 	String main_window = "Cam FEED";
@@ -139,6 +150,9 @@ int main()
 			cin.get();
 			break;
 		}
+
+		cout << "orgFrame FPS: " << fps
+		   	 << endl;
 
 		// Flip the frame
 		flip(frameORG, frameORG, 1);
@@ -188,7 +202,7 @@ int main()
 		findContours(frameThresh, contours, RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
 		vector<double> areas(contours.size());
-		for (int i = 0; i < contours.size(); i++)
+		for (int i = 0; i < (int)contours.size(); i++)
 		{
 			areas[i] = contourArea(Mat(contours[i]));
 		}
@@ -204,9 +218,11 @@ int main()
 		{
 			box = boundingRect(contours[maxPos.y]);
 			rectangle(frameORG, box.tl(), box.br(), Scalar(255, 0, 0), 2, 8, 0);
+			
 
 			object.x = box.x + box.width / 2;
 			object.y = box.y + box.height / 2;
+			circle(frameORG, object, 2, Scalar(255, 100, 0), 3);
 			object_area = box.width * box.height;
 
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
@@ -220,6 +236,7 @@ int main()
 #endif // RASPI
 
 		}
+		/*
 		else
 		{
 			spi_buffer = byte16_to_byte8(object.x, object.y, object_area);
@@ -231,12 +248,27 @@ int main()
 			cout << "Pos: " << trash_X << "\n";
 #endif // RASPI
 		}
-
+		*/
 		// Draw center grid
 		draw_grid(frameORG);
+
+		/* Frame counter */
+		frameCounter++;
+		time_t timeNow = time(0) - timeBegin;
+
+		if (timeNow - tick >= 1)
+		{
+			tick++;
+			cout << "\t\t FPS: " << frameCounter 
+				 << endl;
+			frameCounter = 0;
+		}
+
 		// Show result frame
 		imshow(main_window, frameORG);
 		imshow(thresh_window, frameThresh);
+
+		
 
 		/* Press ESC to STOP */
 		end_prog();
@@ -271,7 +303,7 @@ Mat pre_Process(Mat frameORG)
 	cvtColor(frameORG, frameHSV, COLOR_BGR2HSV);
 	// Theshold the frame
 	//inRange(frameHSV, Scalar(hsv.H_min, hsv.S_min, hsv.V_min), Scalar(hsv.H_max, hsv.S_max, hsv.V_max), frameThresh);
-	inRange(frameHSV, Scalar(0, 210, 194), Scalar(10, 255, 255), frameThresh);
+	inRange(frameHSV, Scalar(0, 189, 114), Scalar(179, 255, 255), frameThresh);
 
 	// Morphological Opening
 	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -282,49 +314,6 @@ Mat pre_Process(Mat frameORG)
 	erode(frameThresh, frameThresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
 	return frameThresh;
-}
-
-Point calc_coor(Point pnt_in)
-{
-	Point pnt_out;
-
-	pnt_out.x = pnt_in.x - dWidth / 2;
-	pnt_out.y = -(pnt_in.y - dHeight / 2);
-
-	return pnt_out;
-}
-
-string coor_to_str(Point object)
-{
-	string center_Data;
-	string tmpX;
-	string tmpY;
-	if ((object.x / 10) == 0)
-	{
-		tmpX = "00" + to_string(object.x);
-	}
-	else if ((object.x / 100) == 0)
-	{
-		tmpX = "0" + to_string(object.x);
-	}
-	else
-	{
-		tmpX = to_string(object.x);
-	}
-
-	if ((object.y / 10) == 0)
-	{
-		tmpY = "00" + to_string(object.y);
-	}
-	else if ((object.x / 100) == 0)
-	{
-		tmpY = "0" + to_string(object.y);
-	}
-	else
-	{
-		tmpY = to_string(object.y);
-	}
-	return center_Data = to_string(flag) + tmpX + tmpY;
 }
 
 
@@ -341,15 +330,10 @@ void draw_grid(Mat frameORG)
 {
 	line(frameORG, Point(dWidth / 2, 0), Point(dWidth / 2, dHeight), Scalar(255, 100, 0), 1, 8);
 	line(frameORG, Point(0, dHeight / 2), Point(dWidth, dHeight / 2), Scalar(255, 100, 0), 1, 8);
+	line(frameORG, Point(dWidth / 2 - center_W, 0), Point(dWidth / 2 - center_W, dHeight), Scalar(0, 100, 0), 1, 8);
+	line(frameORG, Point(dWidth / 2 + center_W, 0), Point(dWidth / 2 + center_W, dHeight), Scalar(0, 100, 0), 1, 8);
 }
 
-int i_map(int in, float max1, float max2)
-{
-	int out;
-	float tmp = max1 / max2;
-	out = in / tmp;
-	return out;
-}
 
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A)
 {

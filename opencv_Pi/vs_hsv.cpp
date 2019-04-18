@@ -30,7 +30,7 @@ using namespace std;
 /*
 * Definition
 */
-//#define RASPI
+#define RASPI
 #define CAM_INDEX					0
 
 
@@ -118,7 +118,7 @@ int main(void)
 		cin.get();
 		return -1;
 	}
-
+	
 	fps = int(cap.get(CAP_PROP_FPS));
 	dWidth = int(cap.get(CAP_PROP_FRAME_WIDTH));
 	dHeight = int(cap.get(CAP_PROP_FRAME_HEIGHT));

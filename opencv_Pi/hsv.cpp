@@ -30,7 +30,7 @@ using namespace std;
 /*
 * Definition
 */
-//#define RASPI
+#define RASPI
 #define CAM_INDEX					0
 
 
@@ -45,7 +45,7 @@ using namespace std;
 #include <wiringPiSPI.h>
 
 #define CHANEL 				0
-#define SPEED 				500000
+#define SPEED 				16000000
 #define	SS0					8       // GPIO 8
 
 #define tx_Size				6
@@ -75,10 +75,8 @@ struct HSV_Val
 };
 struct HSV_Val hsv;
 
-
 bool flag = true;
 
-int fps;
 int dWidth;
 int dHeight;
 const uint8_t center_W = 50;
@@ -119,14 +117,8 @@ int main(void)
 		return -1;
 	}
 
-	fps = int(cap.get(CAP_PROP_FPS));
 	dWidth = int(cap.get(CAP_PROP_FRAME_WIDTH));
 	dHeight = int(cap.get(CAP_PROP_FRAME_HEIGHT));
-
-	/* Frame counter */
-	long frameCounter = 0;
-	time_t timeBegin = time(0);
-	int tick = 0;
 
 	//cout << "Resolution of the video: " << dWidth << " x " << dHeight << endl;
 
@@ -150,9 +142,6 @@ int main(void)
 			cin.get();
 			break;
 		}
-
-		cout << "orgFrame FPS: " << fps
-		   	 << endl;
 
 		// Flip the frame
 		flip(frameORG, frameORG, 1);
@@ -252,23 +241,9 @@ int main(void)
 		// Draw center grid
 		draw_grid(frameORG);
 
-		/* Frame counter */
-		frameCounter++;
-		time_t timeNow = time(0) - timeBegin;
-
-		if (timeNow - tick >= 1)
-		{
-			tick++;
-			cout << "\t\t FPS: " << frameCounter 
-				 << endl;
-			frameCounter = 0;
-		}
-
 		// Show result frame
 		imshow(main_window, frameORG);
 		imshow(thresh_window, frameThresh);
-
-		
 
 		/* Press ESC to STOP */
 		end_prog();
@@ -337,7 +312,7 @@ void draw_grid(Mat frameORG)
 
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A)
 {
-	uint8_t out_byte8[6];
+	uint8_t * out_byte8;
 	out_byte8[0] = (uint8_t)((byte16_X >> 8) & 0xFF); // BYTE HIGH
 	out_byte8[1] = (uint8_t)(byte16_X & 0xFF);		  // BYTE LOW
 	out_byte8[2] = (uint8_t)((byte16_Y >> 8) & 0xFF); // BYTE HIGH

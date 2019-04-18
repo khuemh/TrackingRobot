@@ -155,17 +155,22 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>obj_X</ItemText>
+          <ItemText>obj_X,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>obj_Y</ItemText>
+          <ItemText>obj_Y,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>obj_A</ItemText>
+          <ItemText>obj_A,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>receive_data,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

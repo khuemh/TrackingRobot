@@ -30,7 +30,7 @@ using namespace std;
 /*
 * Definition
 */
-#define RASPI
+//#define RASPI
 #define CAM_INDEX					0
 
 

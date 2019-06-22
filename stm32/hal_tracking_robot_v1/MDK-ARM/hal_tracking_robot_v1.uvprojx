@@ -414,9 +414,6 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>::CMSIS</GroupName>
-        </Group>
-        <Group>
           <GroupName>Application/MDK-ARM</GroupName>
           <Files>
             <File>
@@ -545,6 +542,9 @@
               <FilePath>../Src/system_stm32f4xx.c</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>

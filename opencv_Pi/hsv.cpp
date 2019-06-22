@@ -16,8 +16,13 @@ ID:                 $Id:  $
 * Include Header File
 */
 #include <iostream>
+#include <ctime>
 #include <string>
-#include <opencv2/opencv.hpp>
+
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+
 
 using namespace cv;
 using namespace std;
@@ -25,7 +30,7 @@ using namespace std;
 /*
 * Definition
 */
-#define RASPI
+//#define RASPI
 #define CAM_INDEX					0
 
 
@@ -40,7 +45,7 @@ using namespace std;
 #include <wiringPiSPI.h>
 
 #define CHANEL 				0
-#define SPEED 				500000
+#define SPEED 				16000000
 #define	SS0					8       // GPIO 8
 
 #define tx_Size				6
@@ -70,7 +75,6 @@ struct HSV_Val
 };
 struct HSV_Val hsv;
 
-
 bool flag = true;
 
 int dWidth;
@@ -89,10 +93,7 @@ uint16_t trash_X;
 */
 void Create_HSV_Trackbar();
 Mat pre_Process(Mat frameORG);
-Point calc_coor(Point pnt_in);
-string coor_to_str(Point object);
 void draw_grid(Mat frameORG);
-int i_map(int in, float max1, float max2);
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A);
 uint16_t byte8_to_byte16(uint8_t * byte8);
 void end_prog();
@@ -100,7 +101,7 @@ void end_prog();
 /*
 * MAIN FUNCTION
 */
-int main()
+int main(void)
 {
 	/* MAIN SETUP */
 #ifdef RASPI
@@ -115,10 +116,12 @@ int main()
 		cin.get();
 		return -1;
 	}
+
 	dWidth = int(cap.get(CAP_PROP_FRAME_WIDTH));
 	dHeight = int(cap.get(CAP_PROP_FRAME_HEIGHT));
 
 	//cout << "Resolution of the video: " << dWidth << " x " << dHeight << endl;
+
 
 	// Create main WINDOW
 	String main_window = "Cam FEED";
@@ -237,6 +240,7 @@ int main()
 		*/
 		// Draw center grid
 		draw_grid(frameORG);
+
 		// Show result frame
 		imshow(main_window, frameORG);
 		imshow(thresh_window, frameThresh);
@@ -287,49 +291,6 @@ Mat pre_Process(Mat frameORG)
 	return frameThresh;
 }
 
-Point calc_coor(Point pnt_in)
-{
-	Point pnt_out;
-
-	pnt_out.x = pnt_in.x - dWidth / 2;
-	pnt_out.y = -(pnt_in.y - dHeight / 2);
-
-	return pnt_out;
-}
-
-string coor_to_str(Point object)
-{
-	string center_Data;
-	string tmpX;
-	string tmpY;
-	if ((object.x / 10) == 0)
-	{
-		tmpX = "00" + to_string(object.x);
-	}
-	else if ((object.x / 100) == 0)
-	{
-		tmpX = "0" + to_string(object.x);
-	}
-	else
-	{
-		tmpX = to_string(object.x);
-	}
-
-	if ((object.y / 10) == 0)
-	{
-		tmpY = "00" + to_string(object.y);
-	}
-	else if ((object.x / 100) == 0)
-	{
-		tmpY = "0" + to_string(object.y);
-	}
-	else
-	{
-		tmpY = to_string(object.y);
-	}
-	return center_Data = to_string(flag) + tmpX + tmpY;
-}
-
 
 void end_prog()
 {
@@ -346,16 +307,8 @@ void draw_grid(Mat frameORG)
 	line(frameORG, Point(0, dHeight / 2), Point(dWidth, dHeight / 2), Scalar(255, 100, 0), 1, 8);
 	line(frameORG, Point(dWidth / 2 - center_W, 0), Point(dWidth / 2 - center_W, dHeight), Scalar(0, 100, 0), 1, 8);
 	line(frameORG, Point(dWidth / 2 + center_W, 0), Point(dWidth / 2 + center_W, dHeight), Scalar(0, 100, 0), 1, 8);
-	
 }
 
-int i_map(int in, float max1, float max2)
-{
-	int out;
-	float tmp = max1 / max2;
-	out = in / tmp;
-	return out;
-}
 
 uint8_t *byte16_to_byte8(uint16_t byte16_X, uint16_t byte16_Y, uint16_t byte16_A)
 {

@@ -1,0 +1,27 @@
+--cpu Cortex-M4.fp
+"hal_tracking_robot_v4\system_stm32f4xx.o"
+"hal_tracking_robot_v4\startup_stm32f411xe.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_dma_ex.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_dma.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_gpio.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_rcc.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_flash.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_tim_ex.o"
+"hal_tracking_robot_v4\stm32f4xx_hal.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_pwr.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_flash_ex.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_tim.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_rcc_ex.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_flash_ramfunc.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_pwr_ex.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_cortex.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_spi.o"
+"hal_tracking_robot_v4\main.o"
+"hal_tracking_robot_v4\stm32f4xx_it.o"
+"hal_tracking_robot_v4\stm32f4xx_hal_msp.o"
+"hal_tracking_robot_v4\delay.o"
+"hal_tracking_robot_v4\pid.o"
+--library_type=microlib --strict --scatter "hal_tracking_robot_v4\hal_tracking_robot_v4.sct"
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "hal_tracking_robot_v4.map" -o hal_tracking_robot_v4\hal_tracking_robot_v4.axf

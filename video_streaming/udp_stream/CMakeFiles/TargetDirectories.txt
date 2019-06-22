@@ -1,4 +1,4 @@
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/rebuild_cache.dir
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/edit_cache.dir
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/client.dir
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/server.dir
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/rebuild_cache.dir
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/edit_cache.dir
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/client.dir
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/server.dir

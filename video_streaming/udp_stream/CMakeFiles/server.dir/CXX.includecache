@@ -6,21 +6,21 @@
 
 #IncludeRegexTransform: 
 
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Server.cpp
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Server.cpp
 Socket.h
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.h
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.h
 iostream
 -
 cstdlib
 -
 config.h
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/config.h
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/config.h
 opencv2/opencv.hpp
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/opencv2/opencv.hpp
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/opencv2/opencv.hpp
 
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.cpp
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.cpp
 Socket.h
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.h
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.h
 winsock.h
 -
 sys/types.h
@@ -40,7 +40,7 @@ errno.h
 string.h
 -
 
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.h
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.h
 cstdlib
 -
 exception
@@ -48,7 +48,7 @@ exception
 string
 -
 
-/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/config.h
+/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/config.h
 
 /usr/local/include/opencv/cxcore.h
 opencv2/core/core_c.h

@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Server.cpp" "/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/server.dir/Server.cpp.o"
-  "/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.cpp" "/home/pi/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/server.dir/Socket.cpp.o"
+  "/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Server.cpp" "/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/server.dir/Server.cpp.o"
+  "/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/Socket.cpp" "/home/khuehm/wrkspc/TrackingRobot/video_streaming/udp_stream/CMakeFiles/server.dir/Socket.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

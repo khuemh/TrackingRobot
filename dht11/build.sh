@@ -1,1 +1,2 @@
-gcc $1 -o output -lwiringPi -lwiringPiDev 
+
+g++ $1 -o output -lwiringPi -lwiringPiDev 

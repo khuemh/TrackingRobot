@@ -1,1 +1,0 @@
-/usr/bin/cc     CMakeFiles/output.dir/dht11.c.o  -o output -rdynamic -lwiringPi 
